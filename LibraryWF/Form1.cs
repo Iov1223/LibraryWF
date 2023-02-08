@@ -24,38 +24,26 @@ namespace LibraryWF
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            string _SqlExpression = "USE [Library] SELECT * FROM [BookCard]";
-            SqlCommand command = new SqlCommand(_SqlExpression, connection);
-            connection.Open();
-            var reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                object id = reader.GetValue(0);
-                object name = reader.GetValue(1);
-                object age = reader.GetValue(2);
-                object rt = reader.GetValue(3);
-                comboBoxBooks.Items.Add($"{id}) [№{name}] {age} \"{rt}\"");
-            }
-            connection.Close();
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
             try
             {
-                connection.Open();
-                string _SqlExpression = $"USE [Library] INSERT INTO [BookCard] ([PlaceNumber], [Author], [Title]) VALUES ({textBoxPlaceNumber.Text}, N'{textBoxAuthor.Text}', N'{textBoxTitle.Text}')";
+                string _SqlExpression = "USE [Library] SELECT * FROM [BookCard]";
                 SqlCommand command = new SqlCommand(_SqlExpression, connection);
-                command.ExecuteNonQuery();
+                connection.Open();
+                var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    object id = reader.GetValue(0);
+                    object _placeNumber = reader.GetValue(1);
+                    object _author = reader.GetValue(2);
+                    object _title = reader.GetValue(3);
+                    comboBoxBooks.Items.Add($"\"{_title}\"    {_author}    №{_placeNumber}");
+                }
                 connection.Close();
-                Application.Restart();
             }
-            catch 
+            catch
             {
-                MessageBox.Show("Есть пустые поля.");
-                Application.Restart();
+                MessageBox.Show("Не удалось подключится к базе данных!");
             }
-
         }
 
         private void textBoxAuthor_KeyPress(object sender, KeyPressEventArgs e)
@@ -64,8 +52,11 @@ namespace LibraryWF
             {
                 return;
             }
-
-            e.Handled = true;
+            else
+            {
+                MessageBox.Show("В имени не может быть чисел и символов!");
+                e.Handled = true;
+            }
         }
 
         private void textBoxPlaceNumber_KeyPress(object sender, KeyPressEventArgs e)
@@ -76,25 +67,47 @@ namespace LibraryWF
             }
             else
             {
-                MessageBox.Show("Ввод только для чисел!");
+                MessageBox.Show("Только числовой ввод!");
                 e.Handled = true;
             }
         }
 
         private void comboBoxBooks_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Regex regex = new Regex("[0-9]+[)]");
-            MatchCollection matches = regex.Matches(comboBoxBooks.Text);
-            string _tmp = matches[0].Value.Remove(matches[0].Value.IndexOf(')'));
-            MessageBox.Show(_tmp);
-            int _id = Convert.ToInt32(_tmp);
-            connection.Open();
-            string _SqlExpression = $"USE [Library] DELETE  FROM BookCard WHERE Id={_id}";
-            SqlCommand command = new SqlCommand(_SqlExpression, connection);
-            command.ExecuteNonQuery();
-            connection.Close();
-            Application.Restart();
 
+            DialogResult dialogResult = MessageBox.Show($"Вы уверны, что хотите удалить это произведение:\n\n{comboBoxBooks.Text}", "",  MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                Regex regex = new Regex("[№][0-9]+");
+                MatchCollection matches = regex.Matches(comboBoxBooks.Text);
+                string _tmp = matches[0].Value.Remove(0, 1);
+                int _num = Convert.ToInt32(_tmp);
+                connection.Open();
+                string _SqlExpression = $"USE [Library] DELETE  FROM BookCard WHERE PlaceNumber={_num}";
+                SqlCommand command = new SqlCommand(_SqlExpression, connection);
+                command.ExecuteNonQuery();
+                connection.Close();
+                Application.Restart();
+            }
+
+        }
+
+        private void buttonAddToLibrary_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                connection.Open();
+                string _SqlExpression = $"USE [Library] INSERT INTO [BookCard] ([PlaceNumber], [Author], [Title]) VALUES ({textBoxPlaceNumber.Text}, N'{textBoxAuthor.Text}', N'{textBoxTitle.Text}')";
+                SqlCommand command = new SqlCommand(_SqlExpression, connection);
+                command.ExecuteNonQuery();
+                connection.Close();
+                Application.Restart();
+            }
+            catch
+            {
+                MessageBox.Show("Есть пустые поля.");
+                Application.Restart();
+            }
         }
     }
 }
