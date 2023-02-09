@@ -32,7 +32,7 @@ namespace LibraryWF
                 var reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    object id = reader.GetValue(0);
+                    object _id = reader.GetValue(0);
                     object _placeNumber = reader.GetValue(1);
                     object _author = reader.GetValue(2);
                     object _title = reader.GetValue(3);
