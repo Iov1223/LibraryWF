@@ -83,5 +83,20 @@
   <ItemGroup>
     <None Include="image\Library.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="image\ЧБнаоборот.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="image\биб.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="image\библ.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="image\,b,kb.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="image\Библиот.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
